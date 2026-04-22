@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Massachusetts Data Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8f7f4;--card:#ffffff;--border:#e8e5df;--text:#1a1a1a;--muted:#7a756e;--red:#c0392b;--green:#1a7a4c;--blue:#1a4480;--amber:#b8860b;--navy:#0f2942;--gold:#c9a84c}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+.hero{background:var(--navy);color:#fff;padding:72px 24px 56px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(201,168,76,0.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(139,26,26,0.1) 0%,transparent 50%)}
+.hero h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:400;margin-bottom:12px;letter-spacing:-0.01em;position:relative}
+.hero .sub{opacity:0.6;font-size:0.9rem;margin-bottom:8px;font-weight:400;letter-spacing:0.02em;position:relative;max-width:600px;margin-left:auto;margin-right:auto}
+.hero .tagline{opacity:0.35;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;font-weight:600;position:relative;margin-top:16px}
+.container{max-width:900px;margin:0 auto;padding:48px 24px;flex:1}
+.section-label{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);margin-bottom:20px;text-align:center}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;margin-bottom:48px}
+.dash-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04);transition:box-shadow 0.3s,transform 0.3s;text-decoration:none;color:var(--text);display:block}
+.dash-card:hover{box-shadow:0 8px 32px rgba(0,0,0,0.1);transform:translateY(-4px)}
+.dash-card .banner{padding:32px 28px 24px;position:relative;overflow:hidden}
+.dash-card .banner::before{content:'';position:absolute;inset:0;opacity:0.06}
+.dash-card.tax .banner{background:var(--navy)}
+.dash-card.tax .banner::before{background:radial-gradient(ellipse at 70% 30%,var(--gold),transparent 60%)}
+.dash-card.mbta .banner{background:#1a1a2e}
+.dash-card.mbta .banner::before{background:radial-gradient(ellipse at 30% 70%,var(--red),transparent 60%)}
+.dash-card.immigration .banner{background:#1a2e1a}
+.dash-card.immigration .banner::before{background:radial-gradient(ellipse at 50% 50%,var(--green),transparent 60%)}
+.dash-card .banner h2{font-family:'DM Serif Display',Georgia,serif;font-size:1.35rem;font-weight:400;color:#fff;margin-bottom:6px;position:relative}
+.dash-card .banner p{font-size:0.78rem;color:rgba(255,255,255,0.55);position:relative;line-height:1.5}
+.dash-card .body{padding:22px 28px 26px}
+.dash-card .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.dash-card .stat{text-align:center}
+.dash-card .stat .val{font-family:'DM Serif Display',Georgia,serif;font-size:1.3rem;font-weight:400}
+.dash-card .stat .val.red{color:var(--red)}
+.dash-card .stat .val.green{color:var(--green)}
+.dash-card .stat .val.amber{color:var(--amber)}
+.dash-card .stat .val.blue{color:var(--blue)}
+.dash-card .stat .lbl{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;margin-top:3px}
+.dash-card .cta{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border)}
+.dash-card .cta span{font-size:0.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.06em}
+.dash-card .cta .arrow{width:28px;height:28px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform 0.2s}
+.dash-card:hover .cta .arrow{transform:translateX(4px)}
+.dash-card .cta .arrow svg{width:14px;height:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.tag{font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:3px 8px;border-radius:4px;background:var(--bg);color:var(--muted);border:1px solid var(--border)}
+
+footer{text-align:center;padding:32px 24px;color:var(--muted);font-size:0.72rem;border-top:1px solid var(--border);background:#fff}
+footer a{color:var(--navy);font-weight:600;text-decoration:none;border-bottom:1px solid var(--gold)}
+footer a:hover{color:var(--gold)}
+.github-badge{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;font-size:0.72rem;font-weight:600;padding:6px 14px;border-radius:6px;text-decoration:none;margin-top:12px;transition:background 0.2s}
+.github-badge:hover{background:#1a3a5c}
+.github-badge svg{width:16px;height:16px;fill:#fff}
+
+@media(max-width:768px){
+  .dash-grid{grid-template-columns:1fr}
+  .hero{padding:48px 16px 36px}
+  .container{padding:32px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Massachusetts Data Hub</h1>
+  <p class="sub">Interactive dashboards tracking taxes, spending, transit finances, and demographic shifts &mdash; all from official government sources</p>
+  <p class="tagline">Open-source &middot; No paywalls &middot; No spin</p>
+</div>
+
+<div class="container">
+  <p class="section-label">Dashboards</p>
+
+  <div class="dash-grid">
+
+    <!-- Tax Burden Dashboard -->
+    <a href="tax-dashboard.html" class="dash-card tax">
+      <div class="banner">
+        <h2>Massachusetts Tax Burden &amp; State Budget</h2>
+        <p>Income taxes, property taxes, state spending, competitiveness rankings, cost of living, fraud detection, migration &amp; AGI outflow</p>
+      </div>
+      <div class="body">
+        <div class="stats">
+          <div class="stat"><div class="val red">#41</div><div class="lbl">Tax Rank</div></div>
+          <div class="stat"><div class="val red">9%</div><div class="lbl">Top Rate</div></div>
+          <div class="stat"><div class="val red">$64B</div><div class="lbl">FY25 Spending</div></div>
+        </div>
+        <div class="tags">
+          <span class="tag">Income Tax</span>
+          <span class="tag">Property Tax</span>
+          <span class="tag">Surtax</span>
+          <span class="tag">Migration</span>
+          <span class="tag">Cost of Living</span>
+          <span class="tag">Fraud</span>
+          <span class="tag">10 Tabs</span>
+        </div>
+        <div class="cta">
+          <span>Explore Dashboard</span>
+          <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+    </a>
+
+    <!-- MBTA Dashboard -->
+    <a href="mbta-dashboard.html" class="dash-card mbta">
+      <div class="banner">
+        <h2>MBTA Financial Crisis &mdash; No New Taxes</h2>
+        <p>Pension collapse, operating deficits, Big Dig debt scam, Ernst &amp; Young scandal, and a 10-point reform plan</p>
+      </div>
+      <div class="body">
+        <div class="stats">
+          <div class="stat"><div class="val red">52.6%</div><div class="lbl">Pension Funded</div></div>
+          <div class="stat"><div class="val red">$700M</div><div class="lbl">Annual Deficit</div></div>
+          <div class="stat"><div class="val green">$1.1B</div><div class="lbl">No-Tax Solution</div></div>
+        </div>
+        <div class="tags">
+          <span class="tag">Pension</span>
+          <span class="tag">Big Dig Debt</span>
+          <span class="tag">EY Scandal</span>
+          <span class="tag">Fare Evasion</span>
+          <span class="tag">Reform Plan</span>
+          <span class="tag">8 Tabs</span>
+        </div>
+        <div class="cta">
+          <span>Explore Dashboard</span>
+          <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Immigration Dashboard -->
+    <a href="immigration-dashboard.html" class="dash-card immigration">
+      <div class="banner">
+        <h2>Immigration &amp; Massachusetts Population</h2>
+        <p>Demographic shifts, shelter costs, population trends, and how they interact with tax and transit policy</p>
+      </div>
+      <div class="body">
+        <div class="stats">
+          <div class="stat"><div class="val amber">$900M</div><div class="lbl">Shelter Cost</div></div>
+          <div class="stat"><div class="val red">$3,870</div><div class="lbl">/Week/Family</div></div>
+          <div class="stat"><div class="val blue">7M</div><div class="lbl">MA Population</div></div>
+        </div>
+        <div class="tags">
+          <span class="tag">Demographics</span>
+          <span class="tag">Shelter Costs</span>
+          <span class="tag">Population</span>
+          <span class="tag">Companion</span>
+        </div>
+        <div class="cta">
+          <span>Explore Dashboard</span>
+          <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Data sources -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;margin-bottom:24px">
+    <p style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);margin-bottom:12px">Data Sources</p>
+    <p style="font-size:0.78rem;color:var(--muted);line-height:1.8;max-width:700px;margin:0 auto">IRS Statistics of Income &middot; Bureau of Economic Analysis &middot; Bureau of Labor Statistics &middot; Census Bureau &middot; Energy Information Administration &middot; Tax Foundation &middot; MA Department of Revenue &middot; MA Division of Local Services &middot; MBTA Advisory Board &middot; MBTA Retirement Fund &middot; National Transit Database &middot; MA State Auditor &middot; USDA-FNS &middot; GAO &middot; Boston Globe</p>
+  </div>
+
+</div>
+
+<footer>
+  <span>All data from official U.S. government and public sources &middot; No paywalls &middot; No advocacy funding</span><br>
+  <a href="https://github.com/duncanburns2013-dot/MBTA-Scam" class="github-badge">
+    <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+    View on GitHub
+  </a><br>
+  <span style="margin-top:8px;display:inline-block">Data compiled 2025&ndash;2026</span>
+</footer>
+
+</body>
+</html>
