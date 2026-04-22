@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MBTA Financial Crisis — No New Taxes</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f8f7f4;--card:#ffffff;--border:#e8e5df;--text:#1a1a1a;--muted:#7a756e;--red:#c0392b;--red-bg:rgba(192,57,43,0.06);--green:#1a7a4c;--green-bg:rgba(26,122,76,0.06);--blue:#1a4480;--blue-bg:rgba(26,68,128,0.06);--amber:#b8860b;--amber-bg:rgba(184,134,11,0.06);--accent:#8b1a1a;--gold:#c9a84c;--navy:#0f2942}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
+.hero{background:var(--navy);color:#fff;padding:56px 24px 42px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(201,168,76,0.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(139,26,26,0.1) 0%,transparent 50%)}
+.hero h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:400;margin-bottom:8px;letter-spacing:-0.01em;position:relative}
+.hero .sub{opacity:0.65;font-size:0.85rem;margin-bottom:28px;font-weight:400;letter-spacing:0.02em;position:relative}
+.hero-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;max-width:1000px;margin:0 auto;position:relative}
+.hero-stat{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:18px 10px;text-align:center;backdrop-filter:blur(4px);transition:background 0.3s}
+.hero-stat:hover{background:rgba(255,255,255,0.1)}
+.hero-stat .val{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(1.2rem,3vw,1.7rem);font-weight:400}
+.hero-stat .lbl{font-size:0.65rem;opacity:0.55;margin-top:4px;text-transform:uppercase;letter-spacing:0.08em;font-weight:500}
+.hero-stat .val.bad{color:#e8a87c}
+.tab-nav{display:flex;justify-content:center;gap:0;background:#fff;border-bottom:1px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.tab-btn{padding:15px 22px;font-size:0.78rem;font-weight:600;border:none;background:none;cursor:pointer;color:var(--muted);white-space:nowrap;border-bottom:2px solid transparent;transition:all 0.25s;text-transform:uppercase;letter-spacing:0.06em}
+.tab-btn:hover{color:var(--text);background:rgba(0,0,0,0.02)}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--gold)}
+.container{max-width:1200px;margin:0 auto;padding:28px 24px}
+.tab-content{display:none;animation:fadeUp 0.35s ease}
+.tab-content.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.section-title{font-family:'DM Serif Display',Georgia,serif;font-size:1.35rem;font-weight:400;margin-bottom:18px;color:var(--navy)}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:26px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 18px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.03);transition:box-shadow 0.3s,transform 0.3s}
+.stat-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.07);transform:translateY(-2px)}
+.stat-card .label{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px}
+.stat-card .value{font-family:'DM Serif Display',Georgia,serif;font-size:2rem;font-weight:400;line-height:1.1}
+.stat-card .value.red{color:var(--red)}
+.stat-card .value.green{color:var(--green)}
+.stat-card .value.blue{color:var(--blue)}
+.stat-card .value.amber{color:var(--amber)}
+.stat-card .sub{font-size:0.72rem;color:var(--muted);margin-top:6px}
+.alert{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);border-radius:14px;padding:24px;margin-bottom:26px;border-left:4px solid var(--red)}
+.alert h4{color:var(--red);font-size:0.88rem;margin-bottom:12px;font-weight:700;letter-spacing:0.02em}
+.alert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.alert-item{font-size:0.82rem;color:var(--text);padding:5px 0;line-height:1.55}
+.alert-item strong{color:var(--red)}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(450px,1fr));gap:16px;margin-bottom:26px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+.chart-card h3{font-size:0.85rem;font-weight:700;margin-bottom:14px;color:var(--navy)}
+.chart-area{position:relative;height:280px}
+.data-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:26px;overflow-x:auto;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+.data-card h3{font-size:0.88rem;font-weight:700;margin-bottom:14px;color:var(--navy)}
+.data-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.data-table th{text-align:left;padding:10px 14px;border-bottom:2px solid var(--navy);font-weight:700;color:var(--navy);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em}
+.data-table td{padding:10px 14px;border-bottom:1px solid var(--border)}
+.data-table tr:hover{background:rgba(15,41,66,0.02)}
+.data-table .highlight{color:var(--red);font-weight:700}
+.data-table .good{color:var(--green);font-weight:600}
+.info-box{background:var(--blue-bg);border:1px solid rgba(26,68,128,0.12);border-radius:14px;padding:24px;margin-bottom:26px;border-left:4px solid var(--blue)}
+.info-box h4{color:var(--blue);font-size:0.88rem;margin-bottom:10px;font-weight:700}
+.info-box p{font-size:0.82rem;color:var(--text);line-height:1.65}
+.source{font-size:0.68rem;color:var(--muted);margin-top:8px;font-style:italic}
+footer{text-align:center;padding:36px 24px;color:var(--muted);font-size:0.75rem;border-top:1px solid var(--border);background:#fff;margin-top:36px}
+footer a{color:var(--navy);font-weight:600;text-decoration:none;border-bottom:1px solid var(--gold)}
+footer a:hover{color:var(--gold)}
+@media(max-width:768px){
+  .hero-stats{grid-template-columns:repeat(3,1fr)}
+  .chart-grid{grid-template-columns:1fr}
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  .hero{padding:36px 16px 30px}
+  .container{padding:18px}
+}
+@media(max-width:480px){
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .stat-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>MBTA Financial Crisis &mdash; The $1.1B Solution</h1>
+  <p class="sub">Pension collapse, operating deficits, Big Dig debt, consultant grift &mdash; and a 10-point plan that requires zero new taxes</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="val bad">52.6%</div><div class="lbl">Pension Funded Ratio</div></div>
+    <div class="hero-stat"><div class="val bad">$1.62B</div><div class="lbl">Unfunded Pension Liability</div></div>
+    <div class="hero-stat"><div class="val bad">$700M</div><div class="lbl">Annual Operating Deficit</div></div>
+    <div class="hero-stat"><div class="val bad">$13B</div><div class="lbl">Capital Infrastructure Gap</div></div>
+    <div class="hero-stat"><div class="val bad">$610/hr</div><div class="lbl">EY Consultant Rate</div></div>
+    <div class="hero-stat"><div class="val" style="color:#5eead4">$1.1B</div><div class="lbl">Available Without New Taxes</div></div>
+  </div>
+</div>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('overview')">Crisis Overview</button>
+  <button class="tab-btn" onclick="switchTab('pension')">Pension Fund</button>
+  <button class="tab-btn" onclick="switchTab('operating')">Operating Budget</button>
+  <button class="tab-btn" onclick="switchTab('bigdig')">Big Dig Scam</button>
+  <button class="tab-btn" onclick="switchTab('consultants')">EY Consultant Scandal</button>
+  <button class="tab-btn" onclick="switchTab('waste')">Waste &amp; Fare Evasion</button>
+  <button class="tab-btn" onclick="switchTab('solutions')">10-Point Solution</button>
+  <button class="tab-btn" onclick="switchTab('timeline')">How We Got Here</button>
+</nav>
+
+
+
+<div class="container">
+
+<!-- ===== CRISIS OVERVIEW ===== -->
+<div id="overview" class="tab-content active">
+  <div class="alert">
+    <h4>&#x26A0;&#xFE0F; The Triple Crisis &mdash; Pension + Operations + Infrastructure</h4>
+    <div class="alert-grid">
+      <div class="alert-item">Pension fund only <strong>52.6% funded</strong> &mdash; $1.62 billion hole that grows every year</div>
+      <div class="alert-item">Operating deficits of <strong>$473M&ndash;$700M</strong> annually as federal COVID aid expires</div>
+      <div class="alert-item">Capital infrastructure backlog of <strong>$13 billion</strong> &mdash; tracks, signals, vehicles all past useful life</div>
+      <div class="alert-item">Combined annual shortfall: <strong>~$1.1B/year</strong> = $412 per MA household</div>
+      <div class="alert-item">Ernst &amp; Young paid <strong>$610/hour</strong> to &ldquo;research&rdquo; what the Advisory Board already documented</div>
+      <div class="alert-item">This is <strong>NOT a worker problem</strong> &mdash; it&rsquo;s 25 years of deliberate policy failure</div>
+    </div>
+  </div>
+
+  <h2 class="section-title">The Crisis at a Glance</h2>
+  <div class="stat-row">
+    <div class="stat-card"><div class="label">Pension Funded Ratio</div><div class="value red">52.6%</div><div class="sub">Critical &mdash; needs 80%+ for stability</div></div>
+    <div class="stat-card"><div class="label">Investment Return (4yr Avg)</div><div class="value red">4.7%</div><div class="sub">Target is 7.0% &mdash; missing by 33%</div></div>
+    <div class="stat-card"><div class="label">Annual Benefit Payments</div><div class="value amber">$290M</div><div class="sub">vs. $190M in contributions</div></div>
+    <div class="stat-card"><div class="label">Forward Funding (2000)</div><div class="value red">FAILED</div><div class="sub">State shifted burden to riders</div></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>The Three Crises &mdash; Annual Shortfall Breakdown</h3>
+      <div class="chart-area"><canvas id="chartTripleCrisis"></canvas></div>
+      <div class="source">Source: MBTA Advisory Board, MBTA FY2024 Budget, Retirement Fund Annual Report</div>
+    </div>
+    <div class="chart-card">
+      <h3>Combined Annual Burden per MA Household</h3>
+      <div class="chart-area"><canvas id="chartHousehold"></canvas></div>
+      <div class="source">Source: Calculated from total shortfall / 2.67M MA households (Census 2023)</div>
+    </div>
+  </div>
+
+  <!-- The $1.29 visual adapted for MBTA -->
+  <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:40px 36px 32px;margin-bottom:26px;box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+    <p style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);margin-bottom:32px;text-align:center">Where your MBTA dollar actually goes</p>
+    <div style="max-width:600px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+        <div style="width:72px;text-align:right;flex-shrink:0"><span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--green)">Service<br>delivery</span></div>
+        <div style="flex:1;position:relative;height:44px;background:#f5f5f2;border-radius:4px;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;height:100%;width:42%;background:var(--green);border-radius:4px;display:flex;align-items:center;padding-left:14px">
+            <span style="font-family:'DM Serif Display',Georgia,serif;font-size:1.15rem;color:#fff;white-space:nowrap">42&cent;</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+        <div style="width:72px;text-align:right;flex-shrink:0"><span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--amber)">Debt<br>service</span></div>
+        <div style="flex:1;position:relative;height:44px;background:#f5f5f2;border-radius:4px;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;height:100%;width:28%;background:var(--amber);border-radius:4px;display:flex;align-items:center;padding-left:14px">
+            <span style="font-family:'DM Serif Display',Georgia,serif;font-size:1.15rem;color:#fff;white-space:nowrap">28&cent;</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+        <div style="width:72px;text-align:right;flex-shrink:0"><span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--red)">Pension<br>obligations</span></div>
+        <div style="flex:1;position:relative;height:44px;background:#f5f5f2;border-radius:4px;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;height:100%;width:18%;background:var(--red);border-radius:4px;display:flex;align-items:center;padding-left:14px">
+            <span style="font-family:'DM Serif Display',Georgia,serif;font-size:1.15rem;color:#fff;white-space:nowrap">18&cent;</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+        <div style="width:72px;text-align:right;flex-shrink:0"><span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue)">Admin &amp;<br>overhead</span></div>
+        <div style="flex:1;position:relative;height:44px;background:#f5f5f2;border-radius:4px;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;height:100%;width:12%;background:var(--blue);border-radius:4px;display:flex;align-items:center;padding-left:14px">
+            <span style="font-family:'DM Serif Display',Georgia,serif;font-size:1.15rem;color:#fff;white-space:nowrap">12&cent;</span>
+          </div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:0.88rem;color:var(--text);line-height:1.6;max-width:440px;margin:0 auto">Less than half of every MBTA dollar goes to <strong>actually moving people</strong>. The rest goes to debt (much of it from the Big Dig), pension shortfalls, and overhead &mdash; none of which were caused by transit workers.</p>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <h4>&#x1F4CB; What Caused This?</h4>
+    <p>In 2000, the state passed &ldquo;Forward Funding&rdquo; &mdash; transferring financial responsibility for the MBTA from the state general fund to a dedicated sales tax stream. The promise: 1% of state sales tax revenue would grow enough to fund the system. The reality: sales tax revenue has chronically underperformed, creating a cumulative shortfall of $9&ndash;15 billion. Simultaneously, the state dumped $8 billion+ of Big Dig highway debt onto the transit agency&rsquo;s books &mdash; debt for a highway project that had nothing to do with trains or buses.</p>
+  </div>
+</div>
+
+<!-- ===== PENSION FUND ===== -->
+<div id="pension" class="tab-content">
+  <h2 class="section-title">MBTA Retirement Fund &mdash; Critical Condition</h2>
+  <div class="stat-row">
+    <div class="stat-card"><div class="label">Net Position</div><div class="value red">$1.82B</div><div class="sub">Total fund assets</div></div>
+    <div class="stat-card"><div class="label">Total Liability</div><div class="value red">$3.46B</div><div class="sub">What&rsquo;s owed to retirees</div></div>
+    <div class="stat-card"><div class="label">Unfunded Liability</div><div class="value red">$1.62B</div><div class="sub">The gap that keeps growing</div></div>
+    <div class="stat-card"><div class="label">Funded Ratio</div><div class="value red">52.6%</div><div class="sub">Needs 80%+ for stability</div></div>
+    <div class="stat-card"><div class="label">Assumed Return Rate</div><div class="value amber">7.0%</div><div class="sub">Actual 4-year avg: 4.7%</div></div>
+  </div>
+
+  <div class="alert">
+    <h4>&#x26A0;&#xFE0F; Pension Fund Alarm Bells</h4>
+    <div class="alert-grid">
+      <div class="alert-item">Benefits paid out <strong>$290M/year</strong> vs. only <strong>$190M</strong> in contributions &mdash; a $100M annual cash drain</div>
+      <div class="alert-item">4-year average investment return of <strong>4.7%</strong> misses the 7% target by a third</div>
+      <div class="alert-item">At current trajectory, unfunded liability grows to <strong>$2.5B+ by 2030</strong></div>
+      <div class="alert-item">Unlike state pension, MBTA fund has <strong>no legal backstop</strong> &mdash; if it fails, retirees lose everything</div>
+      <div class="alert-item">6,200+ retirees and beneficiaries depending on this fund &mdash; average pension ~$42,000/year</div>
+      <div class="alert-item">This is <strong>not a &ldquo;gold-plated&rdquo; pension</strong> &mdash; these are bus drivers and track workers, not executives</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Fund Assets vs. Total Liability (2018&ndash;2024)</h3>
+      <div class="chart-area"><canvas id="chartPensionPos"></canvas></div>
+      <div class="source">Source: MBTA Retirement Fund Annual Reports, 2018&ndash;2024</div>
+    </div>
+    <div class="chart-card">
+      <h3>Funded Ratio Trend</h3>
+      <div class="chart-area"><canvas id="chartFundedRatio"></canvas></div>
+      <div class="source">Source: MBTA Retirement Fund Annual Reports. 80% is generally considered minimum for stability.</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Investment Returns vs. 7% Target</h3>
+      <div class="chart-area"><canvas id="chartReturns"></canvas></div>
+      <div class="source">Source: MBTA Retirement Fund Annual Reports</div>
+    </div>
+    <div class="chart-card">
+      <h3>Contributions vs. Benefits Paid</h3>
+      <div class="chart-area"><canvas id="chartContrib"></canvas></div>
+      <div class="source">Source: MBTA Retirement Fund Annual Reports</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Asset Allocation (Current)</h3>
+      <div class="chart-area"><canvas id="chartAssetAlloc"></canvas></div>
+      <div class="source">Source: MBTA Retirement Fund Investment Report</div>
+    </div>
+    <div class="chart-card">
+      <h3>Unfunded Liability Projections (3 Scenarios)</h3>
+      <div class="chart-area"><canvas id="chartLiabilityProj"></canvas></div>
+      <div class="source">Source: Actuarial projections based on current trends</div>
+    </div>
+  </div>
+
+  <div class="data-card">
+    <h3>Pension Fund Key Metrics &mdash; Year by Year</h3>
+    <table class="data-table">
+      <thead><tr><th>Year</th><th>Net Position</th><th>Total Liability</th><th>Unfunded</th><th>Funded Ratio</th><th>Investment Return</th></tr></thead>
+      <tbody>
+        <tr><td>2018</td><td>$1.65B</td><td>$3.10B</td><td class="highlight">$1.45B</td><td>53.2%</td><td>8.1%</td></tr>
+        <tr><td>2019</td><td>$1.68B</td><td>$3.18B</td><td class="highlight">$1.50B</td><td>52.8%</td><td>6.2%</td></tr>
+        <tr><td>2020</td><td>$1.62B</td><td>$3.22B</td><td class="highlight">$1.60B</td><td>50.3%</td><td>2.1%</td></tr>
+        <tr><td>2021</td><td>$1.88B</td><td>$3.30B</td><td class="highlight">$1.42B</td><td>57.0%</td><td>18.5%</td></tr>
+        <tr><td>2022</td><td>$1.71B</td><td>$3.38B</td><td class="highlight">$1.67B</td><td>50.6%</td><td>-8.2%</td></tr>
+        <tr><td>2023</td><td>$1.78B</td><td>$3.42B</td><td class="highlight">$1.64B</td><td>52.0%</td><td>7.1%</td></tr>
+        <tr><td>2024</td><td>$1.82B</td><td>$3.46B</td><td class="highlight">$1.62B</td><td>52.6%</td><td>5.8%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== OPERATING BUDGET ===== -->
+<div id="operating" class="tab-content">
+  <h2 class="section-title">Operating Budget &mdash; The Cliff Is Here</h2>
+  <div class="stat-row">
+    <div class="stat-card"><div class="label">Annual Operating Budget</div><div class="value blue">$2.7B</div><div class="sub">FY2024 total</div></div>
+    <div class="stat-card"><div class="label">Federal COVID Aid</div><div class="value red">EXPIRING</div><div class="sub">$1.1B total now nearly gone</div></div>
+    <div class="stat-card"><div class="label">Projected Deficit FY2025</div><div class="value red">$473M</div><div class="sub">Without new revenue</div></div>
+    <div class="stat-card"><div class="label">Projected Deficit FY2028</div><div class="value red">$700M</div><div class="sub">Structural and growing</div></div>
+  </div>
+
+  <div class="alert">
+    <h4>&#x26A0;&#xFE0F; The Federal Aid Cliff</h4>
+    <div class="alert-grid">
+      <div class="alert-item">MBTA received <strong>$1.1 billion</strong> in federal COVID relief &mdash; used to paper over structural deficits</div>
+      <div class="alert-item">Those funds are <strong>nearly exhausted</strong> &mdash; the true structural deficit is now exposed</div>
+      <div class="alert-item">Fare revenue covers only <strong>~28%</strong> of operating costs &mdash; among lowest of major US transit systems</div>
+      <div class="alert-item">Sales tax revenue (1% of state total) has <strong>consistently underperformed</strong> since 2000</div>
+      <div class="alert-item">State promised sales tax would grow <strong>3&ndash;5% annually</strong> &mdash; actual growth: <strong>1.5&ndash;2%</strong></div>
+      <div class="alert-item">Cumulative sales tax shortfall since Forward Funding: <strong>$9&ndash;$15 billion</strong></div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Operating Budget &mdash; Revenue vs. Expenses (FY2020&ndash;FY2028)</h3>
+      <div class="chart-area"><canvas id="chartOpBudget"></canvas></div>
+      <div class="source">Source: MBTA FY2024 Budget, MBTA Advisory Board projections</div>
+    </div>
+    <div class="chart-card">
+      <h3>Revenue Sources Breakdown</h3>
+      <div class="chart-area"><canvas id="chartRevSources"></canvas></div>
+      <div class="source">Source: MBTA FY2024 Budget</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Sales Tax Revenue: Promise vs. Reality</h3>
+      <div class="chart-area"><canvas id="chartSalesTax"></canvas></div>
+      <div class="source">Source: MA DOR, MBTA Advisory Board analysis</div>
+    </div>
+    <div class="chart-card">
+      <h3>MBTA vs. Peer Transit Systems &mdash; State Subsidy Per Rider</h3>
+      <div class="chart-area"><canvas id="chartPeerCompare"></canvas></div>
+      <div class="source">Source: NTD, peer agency financial reports</div>
+    </div>
+  </div>
+
+  <div class="data-card">
+    <h3>Revenue Shortfall &mdash; What the State Promised vs. What Was Delivered</h3>
+    <table class="data-table">
+      <thead><tr><th>Period</th><th>Promised Growth</th><th>Actual Growth</th><th>Cumulative Shortfall</th></tr></thead>
+      <tbody>
+        <tr><td>2000&ndash;2005</td><td>3.5%/yr</td><td class="highlight">1.2%/yr</td><td class="highlight">$1.8B</td></tr>
+        <tr><td>2005&ndash;2010</td><td>3.5%/yr</td><td class="highlight">0.8%/yr</td><td class="highlight">$4.2B</td></tr>
+        <tr><td>2010&ndash;2015</td><td>3.0%/yr</td><td class="highlight">2.1%/yr</td><td class="highlight">$6.5B</td></tr>
+        <tr><td>2015&ndash;2020</td><td>3.0%/yr</td><td class="highlight">1.9%/yr</td><td class="highlight">$9.1B</td></tr>
+        <tr><td>2020&ndash;2024</td><td>3.0%/yr</td><td class="highlight">Variable (COVID)</td><td class="highlight">$12&ndash;$15B</td></tr>
+      </tbody>
+    </table>
+    <div class="source">Source: MBTA Advisory Board, MA Department of Revenue</div>
+  </div>
+</div>
+
+<!-- ===== BIG DIG DEBT ===== -->
+<div id="bigdig" class="tab-content">
+  <h2 class="section-title">The Big Dig Debt Scam</h2>
+  <p style="font-size:1rem;color:var(--red);font-weight:600;margin-bottom:8px;font-family:'DM Serif Display',Georgia,serif">In 2000, Massachusetts dumped $8 billion+ in highway debt onto a transit agency. The MBTA has been paying for roads it doesn&rsquo;t use ever since.</p>
+  <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px">The Central Artery/Tunnel Project (&ldquo;Big Dig&rdquo;) was a highway project. It had nothing to do with trains or buses. But when the state restructured MBTA finances in 2000, it transferred billions in Big Dig-related debt to the transit authority&rsquo;s books.</p>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="label">Big Dig Total Cost</div><div class="value red">$24.3B</div><div class="sub">Original estimate: $2.8B</div></div>
+    <div class="stat-card"><div class="label">Debt Dumped on MBTA</div><div class="value red">$8.0B+</div><div class="sub">For a HIGHWAY project</div></div>
+    <div class="stat-card"><div class="label">Annual Debt Service</div><div class="value red">$200M+</div><div class="sub">Money that could run trains</div></div>
+    <div class="stat-card"><div class="label">Remaining Balance</div><div class="value amber">$3.2B</div><div class="sub">Still paying through ~2040</div></div>
+  </div>
+
+  <div class="alert">
+    <h4>&#x26A0;&#xFE0F; The Biggest Transit Scam in American History</h4>
+    <div class="alert-grid">
+      <div class="alert-item">Big Dig was a <strong>highway project</strong> &mdash; I-93 and the Ted Williams Tunnel. Zero transit components.</div>
+      <div class="alert-item">Original Big Dig estimate: <strong>$2.8 billion</strong>. Final cost: <strong>$24.3 billion</strong>. 8.7x over budget.</div>
+      <div class="alert-item">State transferred <strong>$8B+ in debt</strong> to the MBTA in 2000 as part of &ldquo;Forward Funding&rdquo;</div>
+      <div class="alert-item">MBTA pays <strong>$200M+ per year</strong> in debt service &mdash; enough to fund an entire new bus network</div>
+      <div class="alert-item">If this debt were removed, the MBTA would have a <strong>manageable deficit</strong> instead of a crisis</div>
+      <div class="alert-item">No other transit agency in America carries <strong>highway debt on its books</strong></div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Big Dig Cost Overruns &mdash; Original vs. Actual</h3>
+      <div class="chart-area"><canvas id="chartBigDigCost"></canvas></div>
+      <div class="source">Source: MA Inspector General, Big Dig Final Cost Reports</div>
+    </div>
+    <div class="chart-card">
+      <h3>MBTA Debt Composition &mdash; Transit vs. Non-Transit</h3>
+      <div class="chart-area"><canvas id="chartDebtComp"></canvas></div>
+      <div class="source">Source: MBTA Financial Statements, Advisory Board analysis</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Annual Debt Service Payments</h3>
+      <div class="chart-area"><canvas id="chartDebtService"></canvas></div>
+      <div class="source">Source: MBTA Annual Financial Reports</div>
+    </div>
+    <div class="chart-card">
+      <h3>What $200M/Year Could Buy Instead</h3>
+      <div class="chart-area"><canvas id="chartAlternatives"></canvas></div>
+      <div class="source">Source: MBTA capital planning estimates, peer transit agency budgets</div>
+    </div>
+  </div>
+
+  <!-- Visual: the debt timeline -->
+  <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px 24px;margin-bottom:26px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+    <p style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);margin-bottom:18px">The debt transfer &mdash; what happened in 2000</p>
+    <div style="max-width:580px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:0;margin-bottom:2px">
+        <div style="flex:1;background:#8b1a1a;color:#fff;padding:12px 16px;border-radius:8px 8px 0 0;font-size:0.8rem;font-weight:600">1991: Big Dig begins &mdash; estimated at $2.8B</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0;margin-bottom:2px;padding-left:24px">
+        <div style="width:20px;flex-shrink:0;text-align:center;color:var(--muted);font-size:1.2rem">&darr;</div>
+        <div style="flex:1;background:#c0392b;color:#fff;padding:12px 16px;font-size:0.8rem;font-weight:600">Costs explode &rarr; final price: $24.3 billion (8.7x over)</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0;margin-bottom:2px;padding-left:48px">
+        <div style="width:20px;flex-shrink:0;text-align:center;color:var(--muted);font-size:1.2rem">&darr;</div>
+        <div style="flex:1;background:#b8860b;color:#fff;padding:12px 16px;font-size:0.8rem;font-weight:600">2000: &ldquo;Forward Funding&rdquo; passes &mdash; MBTA restructured</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0;margin-bottom:2px;padding-left:72px">
+        <div style="width:20px;flex-shrink:0;text-align:center;color:var(--muted);font-size:1.2rem">&darr;</div>
+        <div style="flex:1;background:#1a4480;color:#fff;padding:12px 16px;font-size:0.8rem;font-weight:600">State transfers $8B+ Big Dig debt to MBTA&rsquo;s books</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0;padding-left:96px">
+        <div style="width:20px;flex-shrink:0;text-align:center;color:var(--muted);font-size:1.2rem">&darr;</div>
+        <div style="flex:1;background:var(--navy);color:#fff;padding:12px 16px;border-radius:0 0 8px 8px;font-size:0.8rem;font-weight:600">2000&ndash;2040: MBTA pays $200M+/yr for HIGHWAYS, not transit</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EY CONSULTANT SCANDAL ===== -->
+<div id="consultants" class="tab-content">
+  <h2 class="section-title">The Ernst &amp; Young Fee Scandal</h2>
+  <p style="font-size:1rem;color:var(--red);font-weight:600;margin-bottom:8px;font-family:'DM Serif Display',Georgia,serif">&ldquo;The last thing Massachusetts needs is another consultant-driven report.&rdquo; &mdash; Brian Kane, MBTA Advisory Board</p>
+  <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px">In April 2024, MassDOT signed a $450,000 contract with Ernst &amp; Young to &ldquo;research how to fund transportation&rdquo; &mdash; a question the MBTA Advisory Board has already answered in dozens of reports. Meanwhile, MassDOT still owes the MBTA $7 million for the Sumner Tunnel closure.</p>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="label">Contract Amount</div><div class="value red">$450K</div><div class="sub">For research that already exists</div></div>
+    <div class="stat-card"><div class="label">Top Billing Rate</div><div class="value red">$610/hr</div><div class="sub">3 Senior Managing Directors</div></div>
+    <div class="stat-card"><div class="label">Bus Driver Hourly Rate</div><div class="value blue">$35/hr</div><div class="sub">The people who actually move you</div></div>
+    <div class="stat-card"><div class="label">Rate Multiple</div><div class="value red">17.4x</div><div class="sub">EY consultant vs. bus driver</div></div>
+  </div>
+
+  <div class="alert">
+    <h4>&#x26A0;&#xFE0F; The Consultant Grift &mdash; By the Numbers</h4>
+    <div class="alert-grid">
+      <div class="alert-item"><strong>Jon Godsmark</strong> (Washington, D.C.) &mdash; $610/hour</div>
+      <div class="alert-item"><strong>Tom Rousakis</strong> (New York) &mdash; $610/hour</div>
+      <div class="alert-item"><strong>Andrew Phillips</strong> (Washington, D.C.) &mdash; $610/hour</div>
+      <div class="alert-item">All three are <strong>out-of-state</strong> consultants billing Massachusetts taxpayers</div>
+      <div class="alert-item">MassDOT still owes MBTA <strong>$7 million</strong> for Sumner Tunnel closure &mdash; but found $450K for consultants</div>
+      <div class="alert-item">Brian Kane: <strong>&ldquo;I can&rsquo;t believe we&rsquo;re doing this again.&rdquo;</strong></div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Hourly Rate Comparison &mdash; Who Gets Paid What?</h3>
+      <div class="chart-area"><canvas id="chartRateCompare"></canvas></div>
+      <div class="source">Source: Boston Globe investigation, MBTA payroll data</div>
+    </div>
+    <div class="chart-card">
+      <h3>What $450K Could Buy Instead</h3>
+      <div class="chart-area"><canvas id="chartEYAlternatives"></canvas></div>
+      <div class="source">Source: MBTA operating budget, staffing estimates</div>
+    </div>
+  </div>
+
+  <div class="data-card">
+    <h3>The EY Contract &mdash; Full Details</h3>
+    <table class="data-table">
+      <thead><tr><th>Detail</th><th>Info</th></tr></thead>
+      <tbody>
+        <tr><td>Firm</td><td class="highlight">Ernst &amp; Young (EY)</td></tr>
+        <tr><td>Contract Amount</td><td class="highlight">$450,000</td></tr>
+        <tr><td>Signed</td><td>April 2024</td></tr>
+        <tr><td>Purpose</td><td>&ldquo;Research how to fund transportation&rdquo;</td></tr>
+        <tr><td>Hourly Rates</td><td class="highlight">$244 &ndash; $610/hour</td></tr>
+        <tr><td>Advisory Board Response</td><td class="highlight">&ldquo;The last thing MA needs is another consultant-driven report&rdquo;</td></tr>
+        <tr><td>Reports Already Existing</td><td>Dozens from MBTA Advisory Board</td></tr>
+        <tr><td>MassDOT Debt to MBTA</td><td class="highlight">$7 million (Sumner Tunnel) &mdash; still unpaid</td></tr>
+      </tbody>
+    </table>
+    <div class="source">Source: Boston Globe investigation, April 2024</div>
+  </div>
+
+  <!-- The 17.4x visual -->
+  <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:40px 36px 32px;margin-bottom:26px;box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+    <p style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);margin-bottom:32px;text-align:center">Hourly pay &middot; who moves Massachusetts?</p>
+    <div style="max-width:600px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+        <div style="width:100px;text-align:right;flex-shrink:0"><span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--green)">Bus<br>driver</span></div>
+        <div style="flex:1;position:relative;height:44px;background:#f5f5f2;border-radius:4px;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;height:100%;width:5.7%;background:var(--green);border-radius:4px;display:flex;align-items:center;padding-left:8px;min-width:60px">
+            <span style="font-family:'DM Serif Display',Georgia,serif;font-size:1rem;color:#fff;white-space:nowrap">$35</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:32px">
+        <div style="width:100px;text-align:right;flex-shrink:0"><span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--red)">EY Senior<br>Managing Dir.</span></div>
+        <div style="flex:1;position:relative;height:44px;background:#f5f5f2;border-radius:4px;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;height:100%;width:100%;background:var(--red);border-radius:4px;display:flex;align-items:center;padding-left:14px">
+            <span style="font-family:'DM Serif Display',Georgia,serif;font-size:1.15rem;color:#fff;white-space:nowrap">$610</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:stretch;gap:1px;border-radius:10px;overflow:hidden;max-width:420px;margin:0 auto 24px">
+        <div style="flex:1;background:var(--green);padding:18px 0;text-align:center">
+          <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.7);margin-bottom:6px">Moves people</div>
+          <div style="font-family:'DM Serif Display',Georgia,serif;font-size:2.2rem;color:#fff;line-height:1">$35</div>
+        </div>
+        <div style="background:#e8e5df;display:flex;align-items:center;padding:0 14px">
+          <span style="font-size:0.85rem;font-weight:700;color:var(--muted)">vs.</span>
+        </div>
+        <div style="flex:1;background:var(--red);padding:18px 0;text-align:center">
+          <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.7);margin-bottom:6px">Writes reports</div>
+          <div style="font-family:'DM Serif Display',Georgia,serif;font-size:2.2rem;color:#fff;line-height:1">$610</div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:0.88rem;color:var(--text);line-height:1.6;max-width:440px;margin:0 auto">An EY consultant earns in <strong>1 hour</strong> what a bus driver earns in <strong>2.2 full days</strong>. The consultant writes reports about funding problems. The bus driver actually moves people. Massachusetts chose to pay for the report.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WASTE & FARE EVASION ===== -->
+<div id="waste" class="tab-content">
+  <h2 class="section-title">Where the Money Is Being Wasted</h2>
+  <div class="stat-row">
+    <div class="stat-card"><div class="label">Total Identified Waste</div><div class="value red">$729M</div><div class="sub">Annually recoverable</div></div>
+    <div class="stat-card"><div class="label">Fare Evasion Rate</div><div class="value red">~25%</div><div class="sub">On bus/Green Line</div></div>
+    <div class="stat-card"><div class="label">Fare Evasion Loss</div><div class="value red">$70M+</div><div class="sub">Revenue left on the table</div></div>
+    <div class="stat-card"><div class="label">Consultant Spending</div><div class="value amber">$100M+</div><div class="sub">Annual external consulting</div></div>
+  </div>
+
+  <div class="alert">
+    <h4>&#x26A0;&#xFE0F; Waste Categories &mdash; $729M Identified</h4>
+    <div class="alert-grid">
+      <div class="alert-item">Big Dig debt service: <strong>$200M/year</strong> for highways, not transit</div>
+      <div class="alert-item">Sales tax shortfall (state underfunding): <strong>$300M/year</strong> below peer systems</div>
+      <div class="alert-item">External consultant/contractor overcharges: <strong>$50M+/year</strong></div>
+      <div class="alert-item">Fare evasion (unenforced): <strong>$70M/year</strong> in uncollected revenue</div>
+      <div class="alert-item">No competitive bidding on many contracts: <strong>$30M+/year</strong> in overpayment</div>
+      <div class="alert-item">Investment return shortfall (4.7% vs 7% target): <strong>$80M/year</strong> in missed earnings</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Where Money Is Being Wasted &mdash; Annual Breakdown</h3>
+      <div class="chart-area"><canvas id="chartWaste"></canvas></div>
+      <div class="source">Source: MBTA Advisory Board, Boston Globe investigation, actuarial analysis</div>
+    </div>
+    <div class="chart-card">
+      <h3>Fare Evasion by Mode</h3>
+      <div class="chart-area"><canvas id="chartFareEvasion"></canvas></div>
+      <div class="source">Source: MBTA fare collection reports, rider surveys</div>
+    </div>
+  </div>
+
+  <div class="data-card">
+    <h3>Waste &amp; Misallocation &mdash; Complete Breakdown</h3>
+    <table class="data-table">
+      <thead><tr><th>Category</th><th>Annual Cost</th><th>Type</th><th>Fixable?</th></tr></thead>
+      <tbody>
+        <tr><td class="highlight">Big Dig Debt Service</td><td class="highlight">$200M</td><td>Non-transit debt</td><td class="good">Yes &mdash; state should assume</td></tr>
+        <tr><td class="highlight">State Underfunding (vs. peers)</td><td class="highlight">$300M</td><td>Policy failure</td><td class="good">Yes &mdash; fix sales tax formula</td></tr>
+        <tr><td>External Consultant Overspend</td><td class="highlight">$50M</td><td>Contractor grift</td><td class="good">Yes &mdash; audit &amp; cut</td></tr>
+        <tr><td>Fare Evasion</td><td class="highlight">$70M</td><td>Uncollected revenue</td><td class="good">Yes &mdash; enforce collection</td></tr>
+        <tr><td>Investment Return Shortfall</td><td class="highlight">$80M</td><td>Below-target returns</td><td class="good">Yes &mdash; improve allocation</td></tr>
+        <tr><td>No Competitive Bidding</td><td>$30M</td><td>Overpayment</td><td class="good">Yes &mdash; require bidding</td></tr>
+        <tr style="font-weight:700;border-top:2px solid var(--navy)"><td class="highlight">TOTAL IDENTIFIED</td><td class="highlight">$729M+</td><td colspan="2">All recoverable without new taxes</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 10-POINT SOLUTION ===== -->
+<div id="solutions" class="tab-content">
+  <h2 class="section-title">The 10-Point Solution &mdash; No New Taxes</h2>
+  <p style="font-size:1rem;color:var(--green);font-weight:600;margin-bottom:8px;font-family:'DM Serif Display',Georgia,serif">Total recoverable: $1.1 billion/year. Current deficit: $540M. Result: $560M surplus. Zero new taxes.</p>
+  <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px">The money exists. The solutions are clear. What&rsquo;s missing is the political will to cut the consultant/contractor gravy train and remove the unfair Big Dig debt burden. Every new tax they propose is a dollar they don&rsquo;t have to cut from their cronies.</p>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="label">Total Recoverable</div><div class="value green">$1.1B</div><div class="sub">From 10 reforms below</div></div>
+    <div class="stat-card"><div class="label">Current Deficit</div><div class="value red">$540M</div><div class="sub">Operating + pension gap</div></div>
+    <div class="stat-card"><div class="label">Surplus After Reform</div><div class="value green">+$560M</div><div class="sub">For capital improvements</div></div>
+    <div class="stat-card"><div class="label">New Taxes Required</div><div class="value green">ZERO</div><div class="sub">No new burden on taxpayers</div></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>10-Point Reform Plan &mdash; Revenue Impact</h3>
+      <div class="chart-area"><canvas id="chartReformPlan"></canvas></div>
+      <div class="source">Source: MBTA Advisory Board data, peer transit analysis, actuarial projections</div>
+    </div>
+    <div class="chart-card">
+      <h3>Deficit to Surplus &mdash; Before and After Reform</h3>
+      <div class="chart-area"><canvas id="chartDeficitSurplus"></canvas></div>
+      <div class="source">Source: Compiled from reform impact estimates</div>
+    </div>
+  </div>
+
+  <div class="data-card">
+    <h3>The 10-Point Plan &mdash; Complete Breakdown</h3>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Reform</th><th>Annual Impact</th><th>How</th><th>New Tax?</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:700">1</td><td>Remove Big Dig Debt</td><td class="good">+$200M</td><td>State assumes highway debt</td><td class="good">No</td></tr>
+        <tr><td style="font-weight:700">2</td><td>Fix Sales Tax Formula</td><td class="good">+$300M</td><td>Deliver what was promised in 2000</td><td class="good">No &mdash; existing tax</td></tr>
+        <tr><td style="font-weight:700">3</td><td>Federal Infrastructure Grants</td><td class="good">+$150M</td><td>Apply for available federal funds</td><td class="good">No</td></tr>
+        <tr><td style="font-weight:700">4</td><td>Pension Reform (New Hires)</td><td class="good">+$100M</td><td>Defined contribution for new employees</td><td class="good">No</td></tr>
+        <tr><td style="font-weight:700">5</td><td>Enforce Fare Collection</td><td class="good">+$70M</td><td>Fix broken fare gates, add inspectors</td><td class="good">No</td></tr>
+        <tr><td style="font-weight:700">6</td><td>Cut EY &amp; Consultant Waste</td><td class="good">+$50M</td><td>Cancel EY, audit all contracts</td><td class="good">No</td></tr>
+        <tr><td style="font-weight:700">7</td><td>Monetize Existing Assets</td><td class="good">+$80M</td><td>Station naming, air rights, land leases</td><td class="good">No</td></tr>
+        <tr><td style="font-weight:700">8</td><td>Audit &amp; Cut Redundancy</td><td class="good">+$40M</td><td>Eliminate duplicate positions/functions</td><td class="good">No</td></tr>
+        <tr><td style="font-weight:700">9</td><td>Improve Investment Returns</td><td class="good">+$80M</td><td>Modern portfolio strategy (target 7%+)</td><td class="good">No</td></tr>
+        <tr><td style="font-weight:700">10</td><td>Require Competitive Bidding</td><td class="good">+$30M</td><td>Open bidding on all contracts &gt;$50K</td><td class="good">No</td></tr>
+        <tr style="font-weight:700;border-top:2px solid var(--navy)"><td></td><td class="good">TOTAL</td><td class="good">+$1,100M</td><td colspan="2">Deficit: $540M &rarr; Surplus: +$560M</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert" style="background:var(--green-bg);border-color:rgba(26,122,76,0.15);border-left-color:var(--green)">
+    <h4 style="color:var(--green)">&#x2705; What This Plan Protects</h4>
+    <div class="alert-grid">
+      <div class="alert-item"><strong>No new taxes</strong> on citizens or businesses</div>
+      <div class="alert-item">Existing pensions <strong>fully protected</strong> &mdash; reforms only for new hires</div>
+      <div class="alert-item"><strong>No service cuts</strong> &mdash; surplus enables expansion</div>
+      <div class="alert-item"><strong>Capital investment</strong> funded from surplus &mdash; fix what&rsquo;s broken</div>
+    </div>
+  </div>
+
+  <!-- The cascade: reform impact -->
+  <div style="background:var(--navy);color:#fff;border-radius:14px;padding:28px 28px 24px;margin-bottom:26px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:18px">
+      <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:16px">
+        <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.45);margin-bottom:6px">Step 1: Remove unfair debt</div>
+        <div style="font-size:0.85rem;color:#fff;line-height:1.55">Remove <strong style="color:#c9a84c">$200M/yr</strong> in Big Dig highway debt &mdash; this alone cuts the deficit by 37%</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:16px">
+        <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.45);margin-bottom:6px">Step 2: Deliver what was promised</div>
+        <div style="font-size:0.85rem;color:#fff;line-height:1.55">Fix the sales tax formula to deliver the <strong style="color:#c9a84c">$300M/yr</strong> the state promised in 2000</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:16px">
+        <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.45);margin-bottom:6px">Step 3: Cut the grift</div>
+        <div style="font-size:0.85rem;color:#fff;line-height:1.55">Cancel EY, audit contracts, enforce fares &mdash; <strong style="color:#c9a84c">$150M+/yr</strong> in recovered waste</div>
+      </div>
+    </div>
+    <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);text-align:center">The money is there. The political will isn&rsquo;t.</p>
+  </div>
+</div>
+
+<!-- ===== TIMELINE ===== -->
+<div id="timeline" class="tab-content">
+  <h2 class="section-title">How We Got Here &mdash; 25 Years of Betrayal</h2>
+
+  <div class="alert" style="background:var(--amber-bg);border-color:rgba(184,134,11,0.15);border-left-color:var(--amber)">
+    <h4 style="color:var(--amber)">&#x1F4CA; The Forward Funding Scam &mdash; A Timeline</h4>
+    <div class="alert-grid">
+      <div class="alert-item"><strong>1991:</strong> Big Dig construction begins. Estimated cost: $2.8 billion.</div>
+      <div class="alert-item"><strong>2000:</strong> &ldquo;Forward Funding&rdquo; passes. State transfers Big Dig debt to MBTA. Promises sales tax will cover everything.</div>
+      <div class="alert-item"><strong>2000&ndash;2010:</strong> Sales tax revenue grows at 1&ndash;2% instead of promised 3&ndash;5%. Shortfall accumulates.</div>
+      <div class="alert-item"><strong>2007:</strong> Big Dig final cost reaches $24.3 billion &mdash; 8.7x the original estimate.</div>
+      <div class="alert-item"><strong>2015:</strong> Winter crisis exposes decades of deferred maintenance. System breaks down.</div>
+      <div class="alert-item"><strong>2020&ndash;2023:</strong> COVID relief ($1.1B) temporarily masks structural deficit. Now expiring.</div>
+      <div class="alert-item"><strong>2024:</strong> MassDOT pays Ernst &amp; Young $450K to &ldquo;research&rdquo; funding &mdash; while owing MBTA $7M.</div>
+      <div class="alert-item"><strong>2025:</strong> Operating deficit hits $473M&ndash;$700M. Pension at 52.6%. Infrastructure gap: $13B.</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Cumulative State Underfunding Since Forward Funding (2000)</h3>
+      <div class="chart-area"><canvas id="chartCumShortfall"></canvas></div>
+      <div class="source">Source: MBTA Advisory Board, MA DOR</div>
+    </div>
+    <div class="chart-card">
+      <h3>MBTA Ridership vs. Funding &mdash; The Divergence</h3>
+      <div class="chart-area"><canvas id="chartRiderFunding"></canvas></div>
+      <div class="source">Source: MBTA Blue Book, NTD ridership data</div>
+    </div>
+  </div>
+
+  <div class="info-box" style="background:var(--red-bg);border-color:rgba(192,57,43,0.12);border-left-color:var(--red)">
+    <h4 style="color:var(--red)">&#x1F525; The Bottom Line</h4>
+    <p>This crisis was not caused by greedy workers, generous pensions, or riders who don&rsquo;t pay enough. It was caused by <strong>25 years of deliberate policy choices</strong>: dumping highway debt on a transit agency, promising funding that was never delivered, hiring $610/hour consultants instead of $35/hour bus drivers, and kicking the can down the road until the system broke. The money to fix it exists &mdash; $1.1 billion per year without any new taxes. What&rsquo;s missing is the political courage to take it back from the people who are profiting from the dysfunction.</p>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<footer>
+  <a href="https://github.com/duncanburns2013-dot/MBTA-Scam">MBTA Financial Crisis &mdash; GitHub</a><br>
+  <span>Sources: MBTA Advisory Board, MBTA Retirement Fund Annual Reports, MBTA FY2024 Budget, Boston Globe Investigation (EY Contract), MA Department of Revenue, National Transit Database (NTD), MA Inspector General (Big Dig), IRS Statistics of Income</span><br>
+  <span>Data compiled 2025 &middot; All data from official government and public sources</span><br>
+  <span>GitHub: <a href="https://github.com/duncanburns2013-dot/MBTA-Scam" style="color:var(--navy);font-weight:600;border-bottom:1px solid var(--gold)">duncanburns2013-dot/MBTA-Scam</a></span>
+</footer>
+
+<script>
+const charts={};
+function safeChart(id,config){if(charts[id]){charts[id].destroy()}const ctx=document.getElementById(id);if(!ctx)return;charts[id]=new Chart(ctx,config)}
+
+function switchTab(tabId){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.currentTarget.classList.add('active');
+  initCharts(tabId);
+}
+
+function initCharts(tab){
+  switch(tab){
+    case 'overview':
+      safeChart('chartTripleCrisis',{
+        type:'bar',
+        data:{labels:['Pension Shortfall','Operating Deficit','Capital Gap (annualized)'],datasets:[{label:'Annual Shortfall ($M)',data:[100,540,460],backgroundColor:['#c0392b','#8b1a1a','#b8860b'],borderRadius:8}]},
+        options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{beginAtZero:true,title:{display:true,text:'Millions ($)'}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'$'+ctx.parsed.x+'M/year'}}}}
+      });
+      safeChart('chartHousehold',{
+        type:'bar',
+        data:{labels:['Status Quo\n(Do Nothing)','After 10-Point\nReform','Peer City\nAverage'],datasets:[{label:'Annual Cost per Household',data:[412,0,185],backgroundColor:['#c0392b','#1a7a4c','#1a4480'],borderRadius:8}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:'$/household/year'}}},plugins:{legend:{display:false}}}
+      });
+      break;
+
+    case 'pension':
+      safeChart('chartPensionPos',{
+        type:'line',
+        data:{labels:['2018','2019','2020','2021','2022','2023','2024'],datasets:[{label:'Fund Assets ($B)',data:[1.65,1.68,1.62,1.88,1.71,1.78,1.82],borderColor:'#1a7a4c',backgroundColor:'rgba(26,122,76,0.08)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#1a7a4c'},{label:'Total Liability ($B)',data:[3.10,3.18,3.22,3.30,3.38,3.42,3.46],borderColor:'#c0392b',backgroundColor:'rgba(192,57,43,0.08)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#c0392b'}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:false,min:1,max:4,title:{display:true,text:'Billions ($)'}}},plugins:{legend:{position:'top',labels:{font:{size:11}}}}}
+      });
+      safeChart('chartFundedRatio',{
+        type:'line',
+        data:{labels:['2018','2019','2020','2021','2022','2023','2024'],datasets:[{label:'Funded Ratio (%)',data:[53.2,52.8,50.3,57.0,50.6,52.0,52.6],borderColor:'#c0392b',backgroundColor:'rgba(192,57,43,0.06)',fill:true,tension:.3,pointRadius:6,pointBackgroundColor:'#c0392b',borderWidth:2.5},{label:'Target: 80%',data:[80,80,80,80,80,80,80],borderColor:'#1a7a4c',borderDash:[6,4],pointRadius:0,fill:false,borderWidth:1.5}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:40,max:90,title:{display:true,text:'Funded Ratio (%)'}}},plugins:{legend:{position:'top',labels:{font:{size:11}}}}}
+      });
+      safeChart('chartReturns',{
+        type:'bar',
+        data:{labels:['2018','2019','2020','2021','2022','2023','2024'],datasets:[{label:'Actual Return (%)',data:[8.1,6.2,2.1,18.5,-8.2,7.1,5.8],backgroundColor:ctx=>ctx.parsed.y<7?ctx.parsed.y<0?'#8b1a1a':'#c0392b':'#1a7a4c',borderRadius:5},{label:'7% Target',data:[7,7,7,7,7,7,7],type:'line',borderColor:'#b8860b',borderDash:[6,4],pointRadius:0,fill:false,borderWidth:2}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:-12,max:22,title:{display:true,text:'Return (%)'}}},plugins:{legend:{position:'top',labels:{font:{size:11}}}}}
+      });
+      safeChart('chartContrib',{
+        type:'bar',
+        data:{labels:['2018','2019','2020','2021','2022','2023','2024'],datasets:[{label:'Employer Contributions ($M)',data:[120,125,130,135,140,145,150],backgroundColor:'#1a4480',borderRadius:4},{label:'Member Contributions ($M)',data:[35,36,37,38,39,40,40],backgroundColor:'#5a8fba',borderRadius:4},{label:'Benefits Paid ($M)',data:[240,250,260,265,270,280,290],backgroundColor:'#c0392b',borderRadius:4}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:'Millions ($)'}}},plugins:{legend:{position:'top',labels:{font:{size:10}}}}}
+      });
+      safeChart('chartAssetAlloc',{
+        type:'doughnut',
+        data:{labels:['Domestic Equity (32%)','International Equity (18%)','Fixed Income (25%)','Real Estate (10%)','Alternatives (10%)','Cash (5%)'],datasets:[{data:[32,18,25,10,10,5],backgroundColor:['#1a4480','#5a8fba','#1a7a4c','#b8860b','#7c3aed','#6b7280']}]},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11}}}}}
+      });
+      safeChart('chartLiabilityProj',{
+        type:'line',
+        data:{labels:['2024','2025','2026','2027','2028','2029','2030'],datasets:[{label:'Current Path (4.7% return)',data:[1.62,1.72,1.84,1.98,2.14,2.32,2.52],borderColor:'#c0392b',fill:false,tension:.3,pointRadius:4,borderWidth:2.5},{label:'Target Returns (7%)',data:[1.62,1.60,1.56,1.50,1.42,1.32,1.20],borderColor:'#b8860b',fill:false,tension:.3,pointRadius:4,borderWidth:2,borderDash:[4,3]},{label:'With Reform Plan',data:[1.62,1.52,1.40,1.24,1.06,0.86,0.64],borderColor:'#1a7a4c',backgroundColor:'rgba(26,122,76,0.06)',fill:true,tension:.3,pointRadius:4,borderWidth:2.5}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:false,min:0,max:3,title:{display:true,text:'Unfunded Liability ($B)'}}},plugins:{legend:{position:'top',labels:{font:{size:10}}}}}
+      });
+      break;
+
+    case 'operating':
+      safeChart('chartOpBudget',{
+        type:'line',
+        data:{labels:['FY20','FY21','FY22','FY23','FY24','FY25','FY26','FY27','FY28'],datasets:[{label:'Revenue ($B)',data:[2.1,1.8,2.0,2.2,2.4,2.1,2.0,1.9,1.9],borderColor:'#1a7a4c',backgroundColor:'rgba(26,122,76,0.06)',fill:true,tension:.3,pointRadius:5},{label:'Expenses ($B)',data:[2.3,2.2,2.4,2.5,2.7,2.6,2.6,2.6,2.6],borderColor:'#c0392b',backgroundColor:'rgba(192,57,43,0.06)',fill:true,tension:.3,pointRadius:5},{label:'Federal Aid ($B)',data:[0,0.3,0.4,0.3,0.1,0,0,0,0],borderColor:'#b8860b',borderDash:[5,3],fill:false,tension:.3,pointRadius:4}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:false,min:1.5,max:3,title:{display:true,text:'Billions ($)'}}},plugins:{legend:{position:'top',labels:{font:{size:10}}}}}
+      });
+      safeChart('chartRevSources',{
+        type:'doughnut',
+        data:{labels:['Sales Tax (34%)','Fare Revenue (28%)','Federal Aid (14%)','State Assistance (12%)','Other (12%)'],datasets:[{data:[34,28,14,12,12],backgroundColor:['#1a4480','#1a7a4c','#b8860b','#7c3aed','#6b7280']}]},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11}}}}}
+      });
+      safeChart('chartSalesTax',{
+        type:'line',
+        data:{labels:['2000','2004','2008','2012','2016','2020','2024'],datasets:[{label:'Promised Revenue ($M)',data:[700,850,1050,1300,1600,1950,2400],borderColor:'#1a7a4c',borderDash:[6,4],fill:false,tension:.3,pointRadius:4,borderWidth:2},{label:'Actual Revenue ($M)',data:[700,740,810,870,960,850,1050],borderColor:'#c0392b',backgroundColor:'rgba(192,57,43,0.06)',fill:true,tension:.3,pointRadius:5,borderWidth:2.5}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:false,min:500,title:{display:true,text:'Annual Revenue ($M)'}}},plugins:{legend:{position:'top',labels:{font:{size:11}}}}}
+      });
+      safeChart('chartPeerCompare',{
+        type:'bar',
+        data:{labels:['MBTA\n(Boston)','MTA\n(New York)','CTA\n(Chicago)','WMATA\n(DC)','SEPTA\n(Philly)','BART\n(SF)'],datasets:[{label:'State Subsidy Per Rider ($)',data:[2.10,4.80,3.50,5.20,3.80,4.50],backgroundColor:['#c0392b','#1a7a4c','#1a7a4c','#1a7a4c','#1a7a4c','#1a7a4c'],borderRadius:6}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:'State Subsidy per Rider ($)'}}},plugins:{legend:{display:false}}}
+      });
+      break;
+
+    case 'bigdig':
+      safeChart('chartBigDigCost',{
+        type:'bar',
+        data:{labels:['Original\nEstimate','1995\nRevised','2000\nRevised','Final\nCost'],datasets:[{label:'Cost ($B)',data:[2.8,7.7,14.6,24.3],backgroundColor:['#1a7a4c','#b8860b','#c0392b','#8b1a1a'],borderRadius:8}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:'Billions ($)'}}},plugins:{legend:{display:false}}}
+      });
+      safeChart('chartDebtComp',{
+        type:'doughnut',
+        data:{labels:['Big Dig / Highway Debt (60%)','Actual Transit Debt (25%)','Other State-Imposed (15%)'],datasets:[{data:[60,25,15],backgroundColor:['#c0392b','#1a4480','#b8860b']}]},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11}}}}}
+      });
+      safeChart('chartDebtService',{
+        type:'bar',
+        data:{labels:['2018','2019','2020','2021','2022','2023','2024'],datasets:[{label:'Big Dig Debt Service ($M)',data:[210,205,200,198,195,200,200],backgroundColor:'#c0392b',borderRadius:4},{label:'Transit Debt Service ($M)',data:[80,82,85,88,90,92,95],backgroundColor:'#1a4480',borderRadius:4}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,stacked:true,title:{display:true,text:'Millions ($)'}},x:{stacked:true}},plugins:{legend:{position:'top',labels:{font:{size:11}}}}}
+      });
+      safeChart('chartAlternatives',{
+        type:'bar',
+        data:{labels:['200 New Buses','Green Line\nExtension','Signal System\nUpgrade','500 New\nBus Shelters','Track\nReplacement'],datasets:[{label:'What $200M/yr Could Fund',data:[200,180,150,50,200],backgroundColor:['#1a7a4c','#1a4480','#b8860b','#7c3aed','#5a8fba'],borderRadius:6}]},
+        options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{beginAtZero:true,title:{display:true,text:'Cost ($M)'}}},plugins:{legend:{display:false}}}
+      });
+      break;
+
+    case 'consultants':
+      safeChart('chartRateCompare',{
+        type:'bar',
+        data:{labels:['Bus Driver','Train Operator','Maintenance\nWorker','MBTA\nManager','EY Junior\nConsultant','EY Senior\nManaging Dir.'],datasets:[{label:'Hourly Rate ($)',data:[35,42,38,65,244,610],backgroundColor:['#1a7a4c','#1a7a4c','#1a7a4c','#1a4480','#b8860b','#c0392b'],borderRadius:6}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:'$/hour'}}},plugins:{legend:{display:false}}}
+      });
+      safeChart('chartEYAlternatives',{
+        type:'bar',
+        data:{labels:['6 Bus Drivers\n(1 year)','3 Maintenance\nWorkers (1 yr)','10,000 Monthly\nPasses','2 New Bus\nShelters','1 EY\nContract'],datasets:[{label:'Cost ($K)',data:[450,450,450,450,450],backgroundColor:['#1a7a4c','#1a7a4c','#1a7a4c','#1a7a4c','#c0392b'],borderRadius:6}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:'Cost ($K)'}}},plugins:{legend:{display:false}}}
+      });
+      break;
+
+    case 'waste':
+      safeChart('chartWaste',{
+        type:'bar',
+        data:{labels:['State Under-\nfunding','Big Dig\nDebt','Investment\nShortfall','Fare\nEvasion','Consultant\nOverspend','No Competitive\nBidding'],datasets:[{label:'Annual Waste/Loss ($M)',data:[300,200,80,70,50,30],backgroundColor:['#8b1a1a','#c0392b','#b8860b','#1a4480','#7c3aed','#6b7280'],borderRadius:6}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:'Millions ($)'}}},plugins:{legend:{display:false}}}
+      });
+      safeChart('chartFareEvasion',{
+        type:'bar',
+        data:{labels:['Heavy Rail\n(Red/Orange/Blue)','Green Line\n(Trolley)','Bus','Commuter\nRail','Ferry'],datasets:[{label:'Evasion Rate (%)',data:[8,30,25,5,2],backgroundColor:ctx=>ctx.parsed.y>20?'#c0392b':ctx.parsed.y>10?'#b8860b':'#1a7a4c',borderRadius:6}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,max:40,title:{display:true,text:'Estimated Evasion Rate (%)'}}},plugins:{legend:{display:false}}}
+      });
+      break;
+
+    case 'solutions':
+      safeChart('chartReformPlan',{
+        type:'bar',
+        data:{labels:['Sales Tax\nFix','Big Dig\nDebt','Federal\nGrants','Pension\nReform','Asset\nMonetize','Inv. Returns','Fare\nEnforce','Consultant\nCuts','Redundancy\nAudit','Competitive\nBidding'],datasets:[{label:'Annual Impact ($M)',data:[300,200,150,100,80,80,70,50,40,30],backgroundColor:['#1a7a4c','#1a7a4c','#1a7a4c','#1a7a4c','#1a7a4c','#1a7a4c','#1a7a4c','#1a7a4c','#1a7a4c','#1a7a4c'],borderRadius:5}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:'Annual Impact ($M)'}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'+$'+ctx.parsed.y+'M/year'}}}}
+      });
+      safeChart('chartDeficitSurplus',{
+        type:'bar',
+        data:{labels:['Current\nDeficit','After\nReform'],datasets:[{label:'Annual Balance ($M)',data:[-540,560],backgroundColor:['#c0392b','#1a7a4c'],borderRadius:8}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'Millions ($)'}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>(ctx.parsed.y>0?'+':'')+ctx.parsed.y+'M'}}}}
+      });
+      break;
+
+    case 'timeline':
+      safeChart('chartCumShortfall',{
+        type:'line',
+        data:{labels:['2000','2004','2008','2012','2016','2020','2024'],datasets:[{label:'Cumulative Sales Tax Shortfall ($B)',data:[0,1.8,4.2,6.5,9.1,12.0,15.0],borderColor:'#c0392b',backgroundColor:'rgba(192,57,43,0.08)',fill:true,tension:.3,pointRadius:6,pointBackgroundColor:'#c0392b',borderWidth:2.5}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,title:{display:true,text:'Cumulative Shortfall ($B)'}}},plugins:{legend:{display:false}}}
+      });
+      safeChart('chartRiderFunding',{
+        type:'line',
+        data:{labels:['2000','2004','2008','2012','2016','2019','2022','2024'],datasets:[{label:'Ridership (M trips)',data:[360,380,390,385,395,400,280,340],borderColor:'#1a4480',fill:false,tension:.3,pointRadius:5,borderWidth:2.5},{label:'State Funding (indexed to 2000)',data:[100,95,88,82,78,75,72,70],borderColor:'#c0392b',borderDash:[5,3],fill:false,tension:.3,pointRadius:4,borderWidth:2,yAxisID:'y1'}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:false,min:200,max:420,title:{display:true,text:'Annual Ridership (M)'}},y1:{position:'right',min:60,max:110,title:{display:true,text:'Funding Index (2000=100)'},grid:{drawOnChartArea:false}}},plugins:{legend:{position:'top',labels:{font:{size:10}}}}}
+      });
+      break;
+  }
+}
+
+initCharts('overview');
+</script>
+</body>
+</html>
